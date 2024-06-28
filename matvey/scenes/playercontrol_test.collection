@@ -1,11 +1,11 @@
-name: "game"
+name: "playercontrol_test"
 collection_instances {
   id: "player"
   collection: "/matvey/prefabs/player.collection"
   position {
-    x: 720.0
-    y: 650.0
-    z: 1.0
+    x: 0.0
+    y: 241.0
+    z: 0.0
   }
   rotation {
     x: 0.0
@@ -21,10 +21,10 @@ collection_instances {
 }
 scale_along_z: 0
 embedded_instances {
-  id: "level"
+  id: "tilemap"
   data: "components {\n"
-  "  id: \"level\"\n"
-  "  component: \"/legacy/level.tilemap\"\n"
+  "  id: \"level1\"\n"
+  "  component: \"/matvey/prefabs/tilemap/level1.tilemap\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
@@ -42,16 +42,16 @@ embedded_instances {
   "embedded_components {\n"
   "  id: \"collisionobject\"\n"
   "  type: \"collisionobject\"\n"
-  "  data: \"collision_shape: \\\"/legacy/level.tilemap\\\"\\n"
+  "  data: \"collision_shape: \\\"/matvey/prefabs/tilemap/level1.tilemap\\\"\\n"
   "type: COLLISION_OBJECT_TYPE_STATIC\\n"
   "mass: 0.0\\n"
   "friction: 0.1\\n"
   "restitution: 0.5\\n"
-  "group: \\\"\\\"\\n"
+  "group: \\\"ground\\\"\\n"
   "mask: \\\"player\\\"\\n"
   "linear_damping: 0.0\\n"
   "angular_damping: 0.0\\n"
-  "locked_rotation: false\\n"
+  "locked_rotation: true\\n"
   "bullet: false\\n"
   "\"\n"
   "  position {\n"
@@ -68,8 +68,8 @@ embedded_instances {
   "}\n"
   ""
   position {
-    x: 0.0
-    y: 0.0
+    x: -149.0
+    y: -6.0
     z: 0.0
   }
   rotation {
