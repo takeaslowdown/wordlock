@@ -1,8 +1,9 @@
 [project]
 title = slovowizard
+dependencies#0 = https://github.com/d954mas/defold-utf8/archive/master.zip
 
 [bootstrap]
-main_collection = /scenes/scene.collectionc
+main_collection = /ruslan/scene.collectionc
 
 [input]
 game_binding = /input/game.input_bindingc
