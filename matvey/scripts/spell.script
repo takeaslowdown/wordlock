@@ -1,0 +1,18 @@
+function init(self)
+	print("Spell appeared")
+	go.property('dmg', 10)
+	self.deals_damage = true
+	self.dispose_in = 3.0 -- in seconds
+	timer.delay(self.dispose_in, false, function() print("delete spell"); go.delete("."); end)
+end
+
+function on_message(self, message_id, message, sender)
+	if self.deals_damage and message_id == hash("trigger_response") then
+		if message.group == hash("enemy") or message.group == hash("player") then
+			local contact_url = msg.url(message.other_id)
+			print("dealed dmg to " .. contact_url)
+			msg.post(contact_url.path, "get_dmg", {damage = self.damage})
+			self.deals_damage = false
+		end
+	end
+end
