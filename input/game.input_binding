@@ -14,6 +14,14 @@ key_trigger {
   input: KEY_BACKSPACE
   action: "backspace"
 }
+key_trigger {
+  input: KEY_Z
+  action: "cast"
+}
+key_trigger {
+  input: KEY_ENTER
+  action: "submit"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_1
   action: "touch"

@@ -1,57 +1,56 @@
-name: "playercontrol_test"
-collection_instances {
-  id: "player"
-  collection: "/matvey/prefabs/player.collection"
-  position {
-    x: 0.0
-    y: 43.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-collection_instances {
-  id: "shieldboy"
-  collection: "/matvey/prefabs/enemies/shieldboy.collection"
-  position {
-    x: 697.0
-    y: 43.0
-    z: -1.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 0.3
-    y: 0.3
-    z: 1.0
-  }
-}
+name: "dummy_spell"
 scale_along_z: 0
 embedded_instances {
-  id: "collider"
-  data: "embedded_components {\n"
+  id: "spell"
+  data: "components {\n"
+  "  id: \"spell\"\n"
+  "  component: \"/matvey/scripts/spell.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "  property_decls {\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"sprite\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"default_animation: \\\"dummy\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "blend_mode: BLEND_MODE_ALPHA\\n"
+  "textures {\\n"
+  "  sampler: \\\"texture_sampler\\\"\\n"
+  "  texture: \\\"/matvey/assets/dummy/dummy.atlas\\\"\\n"
+  "}\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
   "  id: \"collisionobject\"\n"
   "  type: \"collisionobject\"\n"
   "  data: \"collision_shape: \\\"\\\"\\n"
-  "type: COLLISION_OBJECT_TYPE_STATIC\\n"
+  "type: COLLISION_OBJECT_TYPE_TRIGGER\\n"
   "mass: 0.0\\n"
   "friction: 0.1\\n"
   "restitution: 0.5\\n"
-  "group: \\\"ground\\\"\\n"
-  "mask: \\\"player\\\"\\n"
+  "group: \\\"spell\\\"\\n"
   "mask: \\\"enemy\\\"\\n"
   "embedded_collision_shape {\\n"
   "  shapes {\\n"
@@ -71,8 +70,8 @@ embedded_instances {
   "    count: 3\\n"
   "    id: \\\"\\\"\\n"
   "  }\\n"
-  "  data: 49999.5\\n"
-  "  data: 37.5\\n"
+  "  data: 90.606064\\n"
+  "  data: 28.738739\\n"
   "  data: 10.0\\n"
   "}\\n"
   "linear_damping: 0.0\\n"
@@ -95,7 +94,7 @@ embedded_instances {
   ""
   position {
     x: 0.0
-    y: -7.0
+    y: 0.0
     z: 0.0
   }
   rotation {

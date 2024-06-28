@@ -1,0 +1,173 @@
+-- TODO: refactor
+local air_acceleration_factor = 0.8
+local max_speed = 80
+local speed = max_speed
+local max_hp = 10
+local gravity = -1900
+local jump_takeoff_speed = 1200
+
+-- pre-hashing ids improves performance
+local msg_contact_point_response = hash("contact_point_response")
+local anim_walk = hash("walk")
+local anim_idle = hash("idle")
+local anim_attack = hash("attack")
+
+local being_attacked = false
+
+
+function init(self)
+	-- initial enemy velocity
+	self.velocity = vmath.vector3(0, 0, 0)
+	-- the direction the enemy is facing
+	self.facing_direction = 0
+	-- the currently playing animation
+	self.anim = nil
+
+	self.player_id = "/player/player#player"
+
+	go.property("hp", 10)
+	go.property("dmg", 1.0)
+	self.performing_attack = false
+	self.animing_atk = false
+	self.player_damaged = false
+
+	set_active_attack_trigger(false)
+
+	go.property("stunned", false)
+end
+
+
+local function play_animation(self, anim)
+	-- only play animations which are not already playing
+	if self.anim ~= anim then
+		-- tell the sprite to play the animation
+		sprite.play_flipbook("#sprite", anim, nil)
+		-- sprite.play_flipbook("#sprite", anim, nil, {playback_rate = self.hp / max_hp})
+
+		-- remember which animation is playing
+		self.anim = anim
+	end
+end
+
+
+local function update_animations(self)
+	-- make sure the enemy character faces the right way
+	sprite.set_hflip("#sprite", self.facing_direction < 0)
+	if self.being_attacked then
+		play_animation(self, anim_idle)
+	elseif self.animing_atk then
+		play_animation(self, anim_attack)
+	elseif speed > 0 then
+		play_animation(self, anim_walk)
+	else
+		play_animation(self, anim_idle)
+	end
+end
+
+
+function fixed_update(self, dt)
+	if self.hp <= 0 then
+		go.delete(".")
+	end
+
+	if self.stunned then
+		return
+	end
+
+	local pos = go.get_position("#")
+	local player_pos = go.get_position(self.player_id)
+
+	local dir = pos.x - player_pos.x
+	speed = max_speed * self.hp / max_hp
+	if math.abs(dir) > 100 then
+		move_to(self, pos, dir, dt)
+	elseif not self.performing_attack then
+		try_attack(self, pos, dir, dt)
+	end
+
+	-- update animations based on state (ground, air, move and idle)
+	update_animations(self)
+end
+
+
+function move_to(self, pos, dir, dt)
+	dir = -sign(dir)
+	walk(self, dir)
+	pos = pos + self.velocity * dt
+	go.set_position(pos)
+end
+
+
+function try_attack(self, pos, dir, dt)
+	self.performing_attack = true
+	self.animing_atk = true
+	local atk_frame_moment = 5
+	local fps = 5
+	local atk_window = 0.1
+	local atk_mul = 0.035
+	timer.delay(atk_frame_moment * fps * atk_mul, false, function() if not self.being_attacked and self.performing_attack then set_active_attack_trigger(true); end; end)
+	for i = 1, 10 do
+		if not self.performing_attack or self.being_attacked then
+			release_attack(self)
+			return
+		end
+		timer.delay(0.04 * i, false, function() if not self.being_attacked and self.performing_attack then move_to(self, pos, dir * 2, dt); end; end)
+	end
+	timer.delay(atk_frame_moment * fps * atk_mul + atk_window, false, function() set_active_attack_trigger(false); self.animing_atk = false; end)
+	timer.delay(atk_frame_moment * fps * atk_mul * 2 + atk_window, false, function() release_attack(self); end)
+end
+
+
+function set_active_attack_trigger(predicate)
+	if predicate then
+		msg.post("#collisionobject1", "enable")
+	else
+		msg.post("#collisionobject1", "disable")
+	end
+end
+
+function release_attack(self)
+	self.player_damaged = false
+	set_active_attack_trigger(false)
+	self.performing_attack = false
+end
+
+
+function stun_for(self, time)
+	self.stunned = true
+	timer.delay(time, false, function() self.stunned = false; end)
+end
+
+
+function on_message(self, message_id, message, sender)
+	-- check if we received a contact point message
+	if message_id == hash("trigger_response") then
+		if not self.player_damaged and message.group == hash("player") then
+			msg.post(self.player_id, "get_dmg", {damage = self.damage})
+			self.player_damaged = true
+		end
+	elseif message_id == hash("get_dmg") then
+		if not self.being_attacked then
+			print('got dmg from ' .. sender)
+			self.being_attacked = true
+			self.performing_attack = false
+			self.hp = self.hp - go.get(sender, "dmg")
+			timer.delay(0.5, false, function() self.being_attacked = false; end)
+		end
+	end
+end
+
+
+function walk(self, direction)
+	self.facing_direction = -sign(direction)
+	self.velocity.x = speed * sign(direction)
+end
+
+
+function sign(val)
+	if val < 0 then
+		return -1
+	else
+		return 1
+	end
+end
