@@ -70,7 +70,7 @@ function fixed_update(self, dt)
 		go.delete(".")
 	end
 
-	if self.stunned then
+	if self.stunned or go.get(self.player_id, "hp") <= 0 then
 		return
 	end
 
