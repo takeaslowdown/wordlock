@@ -27,6 +27,11 @@ function init(self)
 	msg.post("camera#camera", "acquire_camera_focus")
 	msg.post("@render:", "use_camera_projection")
 
+	-- debug
+	-- msg.post("/player/bg", "disable")
+
+	self.jump_speed = jump_takeoff_speed
+	self.xspeed = max_speed
 	self.velocity = vmath.vector3(0, 0, 0)
 	self.facing_direction = 1
 	self.correction = vmath.vector3()
@@ -36,6 +41,7 @@ function init(self)
 	self.idle_for = 0
 	self.prompt = false
 	self.input = ''
+	go.property("inputhash", hash(''))
 	go.property("hp", 3)
 	self.being_attacked = false
 	self.hplabel_id = "#hplabel"
@@ -155,16 +161,16 @@ local function walk(self, direction)
 		self.facing_direction = direction
 	end
 	if self.ground_contact then
-		self.velocity.x = max_speed * direction
+		self.velocity.x = self.xspeed * direction
 	else
-		self.velocity.x = max_speed * air_acceleration_factor * direction
+		self.velocity.x = self.xspeed * air_acceleration_factor * direction
 	end
 end
 
 local function jump(self)
 	if self.ground_contact and not self.jumped then
 		self.jumped = true
-		self.velocity.y = jump_takeoff_speed
+		self.velocity.y = self.jump_speed
 		play_animation(self, anim_jump)
 		self.ground_contact = false
 		timer.delay(0.3, false, function() self.jumped = false; abort_jump(self); end)
@@ -182,6 +188,7 @@ end
 local function cast(self, casted_word)
 	print(casted_word)
 	print(collectionfactory.get_status(self.spellfactory))
+	self.inputhash = hash(casted_word)
 	if casted_word == "поле" then
 		print("casted noJle")
 		local p = go.get_position(".")
@@ -200,6 +207,12 @@ local function cast(self, casted_word)
 		local props = {}
 		props[hash("/spell")] = {projectile = self.facing_direction, dmg = 3.0}
 		collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.0)
+	elseif casted_word == "рывок" then
+		self.jump_speed = jump_takeoff_speed * 1.25
+		self.xspeed = max_speed * 2
+		timer.delay(3, false, function() self.jump_speed = jump_takeoff_speed / 1.25; self.xspeed = max_speed / 2; end)
+	else
+		msg.post("/enemywizard/enemywizard#enemy_wizard", "counterspell")
 	end
 end
 

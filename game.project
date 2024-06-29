@@ -1,5 +1,6 @@
 [project]
 title = slovowizard
+developer = thdn
 dependencies#0 = https://github.com/d954mas/defold-utf8/archive/master.zip
 
 [bootstrap]
@@ -49,4 +50,10 @@ use_fixed_timestep = 1
 
 [graphics]
 max_debug_vertices = 50000
+
+[html5]
+splash_image = /matvey/assets/ui/icon/icon.png
+
+[windows]
+app_icon = /matvey/assets/ui/icon/icon.ico
 
