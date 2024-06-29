@@ -22,6 +22,10 @@ key_trigger {
   input: KEY_ENTER
   action: "submit"
 }
+key_trigger {
+  input: KEY_X
+  action: "showtip"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_1
   action: "touch"

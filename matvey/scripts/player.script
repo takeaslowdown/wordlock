@@ -1,3 +1,5 @@
+utf8.rep = string.rep
+
 -- take-off speed when jumping in pixel units
 local jump_takeoff_speed = 400
 -- these are the tweaks for the mechanics, feel free to change them for a different feeling
@@ -26,7 +28,7 @@ function init(self)
 	msg.post("@render:", "use_camera_projection")
 
 	self.velocity = vmath.vector3(0, 0, 0)
-	self.facing_direction = 0
+	self.facing_direction = 1
 	self.correction = vmath.vector3()
 	self.anim = nil
 	self.jumped = false
@@ -34,12 +36,17 @@ function init(self)
 	self.idle_for = 0
 	self.prompt = false
 	self.input = ''
-	self.hp = 3
+	go.property("hp", 3)
 	self.being_attacked = false
 	self.hplabel_id = "#hplabel"
 
 	self.spellfactory = "#spellfactory"
 	collectionfactory.load(self.spellfactory, function(_, url, result) end)
+
+	msg.post("#inputlabel", "disable")
+	msg.post("#tiplabel", "disable")
+	msg.post("#tiplabel_casts", "disable")
+	self.casts_shown = false
 end
 
 local function play_animation(self, anim)
@@ -59,8 +66,9 @@ local function update_animations(self)
 				play_animation(self, anim_idle)
 				self.idle_for = 0
 			else
-				if self.idle_for == 90 then
+				if self.idle_for == 60 then
 					play_animation(self, anim_think)
+					msg.post("#tiplabel", "enable")
 				else
 					self.idle_for = self.idle_for + 1
 				end
@@ -81,7 +89,7 @@ end
 function update(self, dt)
 	local hplabel = ""
 	for i = 1, self.hp do
-		hplabel = hplabel .. "<3"
+		hplabel = hplabel .. " <3 "
 	end
 	label.set_text(self.hplabel_id, hplabel)
 end
@@ -91,6 +99,10 @@ function fixed_update(self, dt)
 	-- apply gravity
 	self.velocity.y = self.velocity.y + gravity * dt
 
+	if self.velocity.x ~= 0 or self.velocity.y ~= 0 then
+		msg.post("#tiplabel", "disable")
+	end
+	
 	-- move player
 	local pos = go.get_position()
 	pos = pos + self.velocity * dt
@@ -169,28 +181,69 @@ end
 
 local function cast(self, casted_word)
 	print(casted_word)
-	if casted_word == "a" then
-		print("casted AAAAA")
+	print(collectionfactory.get_status(self.spellfactory))
+	if casted_word == "поле" then
+		print("casted noJle")
+		local p = go.get_position(".")
+		p.y = p.y + 35
+		p.z = -1
+		local props = {}
+		props[hash("/spell")] = {projectile = 0, dmg = 10.0}
+		collectionfactory.create(self.spellfactory, p, vmath.quat(), {}, 1.0)
+	--                                               vvv debug
+	elseif casted_word == "стрела" or casted_word == "b" then
+		print("casted CTPEJLA")
 		local p = go.get_position(".")
 		p.x = p.x + 25 * self.facing_direction
-		p.y = p.y + 35
-		print(collectionfactory.get_status(self.spellfactory))
-		local id = collectionfactory.create(self.spellfactory, p, vmath.quat(), {}, 1.0)
-		print('created spell at ' .. p)
-		print(id)
+		p.y = p.y + 45
+		p.z = -1
+		local props = {}
+		props[hash("/spell")] = {projectile = self.facing_direction, dmg = 3.0}
+		collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.0)
 	end
 end
 
+local function add_letter(word, letter)
+	local _, check_for_rus = utf8.gsub(letter, "[А-Яа-я]", " ", 1)
+	if check_for_rus == 0 then
+		return word
+	end
+	return utf8.gsub(word, "_", letter, 1)
+end
+
+local function delete_letter(word)
+	return utf8.reverse(utf8.gsub(utf8.reverse(word), "[а-яА-Я]", "", 1))
+end
+
+local function fmt_input(input)
+	local out = ''
+	utf8.gsub(input, ".", function(c)
+		out = out .. c .. ' '
+	end)
+
+	return out
+end
+
 function on_input(self, action_id, action)
+	if self.hp <= 0 then
+		return
+	end
+	
 	if self.prompt then
 		if action_id == hash("type") then
-			self.input = self.input .. action.text -- <3>
+			self.input = self.input .. action.text
+			-- action.text = utf8.sub(action.text, 1, 1)
+			-- self.input_word = add_letter(self.input_word, action.text)
+			label.set_text("#inputlabel", fmt_input(self.input))
 		elseif action_id == hash("backspace") and action.repeated then
 			local l = string.len(self.input)
-			self.input = string.sub(self.input, 0, l-1) -- <5>
+			self.input = delete_letter(self.input)
+			label.set_text("#inputlabel", fmt_input(self.input))
 		elseif action_id == hash("submit") then
 			self.prompt = false
 			cast(self, self.input)
+			label.set_text("#inputlabel", "")
+			msg.post("#inputlabel", "disable")
 		end
 	elseif action_id == input_left then
 		walk(self, -action.value)
@@ -201,6 +254,14 @@ function on_input(self, action_id, action)
 	elseif action_id == hash("cast") then
 		self.prompt = true
 		-- a bit hacky :p
-		timer.delay(0.1, false, function() self.input = ''; end)
+		timer.delay(0.1, false, function() self.input = ''; msg.post("#inputlabel", "enable"); label.set_text("#inputlabel", ""); end)
+	elseif action_id == hash("showtip") and action.pressed then
+		if self.casts_shown then
+			self.casts_shown = false
+			msg.post("#tiplabel_casts", "disable")
+		else
+			self.casts_shown = true
+			msg.post("#tiplabel_casts", "enable")
+		end
 	end
 end

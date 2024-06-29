@@ -1,6 +1,6 @@
 font: "/ruslan/tomba2full.ttf"
 material: "/builtins/fonts/font.material"
-size: 20
+size: 24
 antialias: 0
 alpha: 1.0
 outline_alpha: 0.0

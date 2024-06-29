@@ -1,9 +1,49 @@
+local function sign(val)
+	if val < 0 then
+		return -1
+	else
+		return 1
+	end
+end
+
+local function binbool(boolv)
+	if boolv then
+		return 1
+	else
+		return 0
+	end
+end
+
+local function play_animation(self, anim)
+	-- only play animations which are not already playing
+	if self.anim ~= anim then
+		-- tell the sprite to play the animation
+		sprite.play_flipbook("#sprite", anim, nil)
+		-- sprite.play_flipbook("#sprite", anim, nil, {playback_rate = self.hp / max_hp})
+
+		-- remember which animation is playing
+		self.anim = anim
+	end
+end
+
 function init(self)
 	print("Spell appeared")
-	go.property('dmg', 10)
+	go.property('dmg', 3)
+	go.property('push', 100.0)
+	-- 0 is not projectile, 1 oriented ->, -1 oriented <-
+	go.property('projectile', 0)
 	self.deals_damage = true
+	self.affected_someone = false
 	self.dispose_in = 3.0 -- in seconds
+	timer.delay(self.dispose_in - 0.5, false, function() play_animation(self, 'dispose'); end)
 	timer.delay(self.dispose_in, false, function() print("delete spell"); go.delete("."); end)
+	self.anim = 'idle'
+end
+
+function fixed_update(self, dt)
+	local pos = go.get_position(".")
+	pos.x = pos.x + 5 * self.projectile * binbool(self.deals_damage)
+	go.set_position(pos, ".")
 end
 
 function on_message(self, message_id, message, sender)
@@ -11,8 +51,18 @@ function on_message(self, message_id, message, sender)
 		if message.group == hash("enemy") or message.group == hash("player") then
 			local contact_url = msg.url(message.other_id)
 			print("dealed dmg to " .. contact_url)
-			msg.post(contact_url.path, "get_dmg", {damage = self.damage})
+			msg.post(contact_url.path, "get_dmg", {damage = self.dmg})
+
+			if go.get("#", 'push') ~= 0.0 then
+				local enemypos = go.get_position(contact_url.path)
+				local dir = enemypos - go.get_position(".")
+				enemypos.x = enemypos.x + go.get("#", 'push') * sign(dir.x)
+				go.set_position(enemypos, contact_url.path)
+			end
+
 			self.deals_damage = false
+			play_animation(self, "dispose")
+			timer.delay(0.5, false, function() print("delete spell"); go.delete("."); end)
 		end
 	end
 end
