@@ -20,11 +20,11 @@ collection_instances {
   }
 }
 collection_instances {
-  id: "shieldboy"
-  collection: "/matvey/prefabs/enemies/shieldboy.collection"
+  id: "enemywizard"
+  collection: "/matvey/prefabs/enemies/enemywizard.collection"
   position {
-    x: 697.0
-    y: 43.0
+    x: 673.0
+    y: 53.0
     z: -1.0
   }
   rotation {
@@ -34,8 +34,8 @@ collection_instances {
     w: 1.0
   }
   scale3 {
-    x: 0.3
-    y: 0.3
+    x: 0.35
+    y: 0.354266
     z: 1.0
   }
 }

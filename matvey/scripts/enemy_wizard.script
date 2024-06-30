@@ -1,0 +1,196 @@
+local function fmt_input(input)
+	local out = ''
+	utf8.gsub(input, ".", function(c)
+		out = out .. c .. ' '
+	end)
+
+	return out
+end
+
+function init(self)
+	self.velocity = vmath.vector3()
+	go.property("hp", 100)
+	go.property("current_spell", '')
+	
+	self.being_attacked = false
+	self.stunned = false
+	self.counterspelled = false
+	self.state = 0
+	-- reserved states are
+	-- 0 - do nothing, think what to do :\
+	-- 1 - move /\
+	-- 2 - cast atk spell ->
+	-- 3 - cast barrier (:)
+
+	self.pre_action = timer.delay(0, false, function() end)
+	self.action = timer.delay(0, false, function() end)
+
+	label.set_text("#spell", fmt_input(""))
+
+	self.dummy_factory = "/player/spells_preload#dummy_spell"
+	self.field_factory = "/player/spells_preload#field_spell"
+	self.arrow_factory = "/player/spells_preload#fireball_spell"
+	self.haste_factory = "/player/spells_preload#haste_spell"
+	self.laser_factory = "/player/spells_preload#laser_spell"
+
+	self.spellfactory = self.dummy_factory
+	
+	go.property("barrier", false)
+end
+
+local function able_to_action(self)
+	return not self.stunned and not self.being_attacked and not self.counterspelled
+end
+
+local function play_animation(self, anim)
+	if self.anim ~= anim then
+		sprite.play_flipbook("#sprite", anim)
+		self.anim = anim
+	end
+end
+
+local function decise(self, dt)
+	-- debug
+	-- if true then
+	-- 	return 2
+	-- end
+	
+	local n = math.random(0, 1000)
+	
+	if n % 6 == 0 then
+		return 2
+	elseif n % 7 == 0 then
+		return 3
+	elseif n % 13 == 0 then
+		return 4
+	else
+		return 1
+	end
+end
+
+local function sign(val)
+	if val < 0 then
+		return -1
+	else
+		return 1
+	end
+end
+
+local function cast_spell(self, spell)
+	self.current_spell = spell
+	label.set_text("#spell", fmt_input(self.current_spell))
+end
+
+local function reset_state(self)
+	self.state = 0
+	self.velocity.x = 0
+	label.set_text("#spell", "")
+	play_animation(self, "idle")
+	self.barrier = false
+	self.being_attacked = false
+	timer.cancel(self.pre_action)
+	timer.cancel(self.action)
+end
+
+local function reset_counterspelled(self)
+	self.counterspelled = false
+	reset_state(self)
+end
+
+local function stun_for(self, time)
+	self.stunned = true
+	play_animation(self, "stun")
+	label.set_text("#spell", "оглушен!")
+	timer.delay(time, false, function() play_animation(self, "idle"); self.stunned = false; reset_state(self); end)
+end
+
+local function set_spellfactory(self, spell_prefab)
+	self.spellfactory = spell_prefab
+end
+
+local function apply_state(self)
+	local state_time = 1.0 -- in seconds
+	local difficulty = 0.7
+	local cb = function() end
+	if self.state == 0 then
+		return
+	elseif self.state == 1 then
+		local sign = sign(math.random(0, 10) - 5)
+		self.velocity.x = 50 * sign
+		state_time = 1.0 * difficulty
+		play_animation(self, "walk");
+	elseif self.state == 2 then
+		set_spellfactory(self, self.arrow_factory)
+		cast_spell(self, "стрела")
+		play_animation(self, "cast")
+		state_time = 2 * difficulty
+
+		local p = go.get_position("#")
+		local dir = go.get_position("/player/player#player") - go.get_position("#")
+		p.x = p.x + 25 * sign(dir.x)
+		p.y = p.y + 65
+		p.z = -1
+		local props = {}
+		props[hash("/spell")] = {projectile = sign(dir.x), dmg = 1.0, by_player = false}
+		cb = function() if able_to_action(self) then collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.0)  end; end
+	elseif self.state == 3 then
+		set_spellfactory(self, self.haste_factory)
+		cast_spell(self, "барьер")
+		play_animation(self, "cast")
+		state_time = 7.5 * difficulty
+		self.pre_action = timer.delay(state_time / 2, false, function() if able_to_action(self) then play_animation(self, "barrier"); self.barrier = true; self.current_spell = ""; end; end)
+	elseif self.state == 4 then
+		cast_spell(self, "безвременье")
+		state_time = 5.0 * difficulty
+		cb = function() msg.post("/player/bg", "disable"); end
+		self.pre_action = timer.delay(state_time * 3, false, function() msg.post("/player/bg", "enable"); end)
+	end
+
+	self.action = timer.delay(state_time, false, function() if able_to_action(self) then cb(); reset_state(self); end; end)
+end
+
+function update(self, dt)
+	if self.hp <= 0 then
+		go.delete("#")
+	end
+	
+	label.set_text("#hplabel", self.hp)
+	
+	if self.state == 0 and able_to_action(self) then
+		self.state = decise(self, dt)
+		apply_state(self)
+	end
+end
+
+function fixed_update(self, dt)
+	if not able_to_action(self) then
+		return
+	end
+
+	local pos = go.get_position(".")
+	self.velocity.y = self.velocity.y - 100 * dt
+	pos = pos + self.velocity * dt
+	go.set_position(pos)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("get_dmg") then
+		if self.barrier then
+			return
+		end
+		if not self.being_attacked then
+			print('got dmg from ' .. sender)
+			self.being_attacked = true
+			self.hp = self.hp - go.get(sender, "dmg")
+			play_animation(self, "stun")
+			timer.delay(0.5, false, function() reset_state(self); end)
+		end
+	elseif message_id == hash("counterspell") then
+		print(go.get(sender, "inputhash"))
+		if not self.stunned and go.get(sender, "inputhash") == hash("контр" .. self.current_spell) then
+			stun_for(self, 2.0)
+			self.counterspelled = true
+			timer.delay(2.5, false, function() reset_counterspelled(self); end)
+		end
+	end
+end
