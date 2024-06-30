@@ -27,28 +27,41 @@ local function play_animation(self, anim)
 end
 
 function init(self)
-	print("Spell appeared")
 	go.property('dmg', 3)
 	go.property('push', 100.0)
 	-- 0 is not projectile, 1 oriented ->, -1 oriented <-
 	go.property('projectile', 0)
+	go.property('by_player', true)
+	go.property('follow', false)
+	go.property('follow_url', hash(''))
+	go.property('follow_offset', vmath.vector3())
 	self.deals_damage = true
 	self.affected_someone = false
-	self.dispose_in = 3.0 -- in seconds
+	go.property("dispose_in", 3.0) -- in seconds
 	timer.delay(self.dispose_in - 0.5, false, function() play_animation(self, 'dispose'); end)
-	timer.delay(self.dispose_in, false, function() print("delete spell"); go.delete("."); end)
+	timer.delay(self.dispose_in, false, function() go.delete("."); end)
 	self.anim = 'idle'
+	print(go.get_position("."), self.by_player)
+
+	sprite.set_hflip("#sprite", self.projectile < 0)
 end
 
 function fixed_update(self, dt)
-	local pos = go.get_position(".")
-	pos.x = pos.x + 5 * self.projectile * binbool(self.deals_damage)
-	go.set_position(pos, ".")
+	if self.follow then
+		local pos = go.get_position(self.follow_url)
+		pos = pos + self.follow_offset
+		go.set_position(pos, ".")
+		-- print("upd pos follow: ", pos)
+	else 
+		local pos = go.get_position(".")
+		pos.x = pos.x + 5 * self.projectile * binbool(self.deals_damage)
+		go.set_position(pos, ".")
+	end
 end
 
 function on_message(self, message_id, message, sender)
 	if self.deals_damage and message_id == hash("trigger_response") then
-		if message.group == hash("enemy") or message.group == hash("player") then
+		if (message.group == hash("enemy") and self.by_player) or (message.group == hash("player") and not self.by_player) then
 			local contact_url = msg.url(message.other_id)
 			print("dealed dmg to " .. contact_url)
 			msg.post(contact_url.path, "get_dmg", {damage = self.dmg})
