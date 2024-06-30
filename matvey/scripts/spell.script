@@ -73,7 +73,6 @@ function on_message(self, message_id, message, sender)
 				go.set_position(enemypos, contact_url.path)
 			end
 
-			self.deals_damage = false
 			play_animation(self, "dispose")
 			timer.delay(0.5, false, function() print("delete spell"); go.delete("."); end)
 		end
