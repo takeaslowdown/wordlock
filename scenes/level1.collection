@@ -39,6 +39,26 @@ collection_instances {
     z: 1.0
   }
 }
+collection_instances {
+  id: "axeman"
+  collection: "/matvey/prefabs/enemies/axeman.collection"
+  position {
+    x: 1153.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 0.5
+    y: 0.5
+    z: 1.0
+  }
+}
 scale_along_z: 0
 embedded_instances {
   id: "collider"

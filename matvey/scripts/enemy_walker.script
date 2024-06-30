@@ -79,7 +79,7 @@ function fixed_update(self, dt)
 
 	local dir = pos.x - player_pos.x
 	speed = max_speed * self.hp / max_hp
-	if math.abs(dir) > 100 then
+	if math.abs(dir) > 140 then
 		move_to(self, pos, dir, dt)
 	elseif not self.performing_attack then
 		try_attack(self, pos, dir, dt)
