@@ -129,7 +129,7 @@ embedded_instances {
   "blend_mode: BLEND_MODE_ALPHA\\n"
   "line_break: false\\n"
   "text: \\\"\\\"\\n"
-  "font: \\\"/ruslan/Tomba2full.font\\\"\\n"
+  "font: \\\"/ruslan/Fonts/Press Start 2P/PressStart2P.font\\\"\\n"
   "material: \\\"/builtins/fonts/label-df.material\\\"\\n"
   "\"\n"
   "  position {\n"
@@ -179,7 +179,7 @@ embedded_instances {
   "text: \\\"X - \\\\321\\\\201\\\\320\\\\277\\\\320\\\\270\\\\321\\\\201\\\\320\\\\276\\\\320\\\\272 \\\\320\\\\267\\\\320\\\\260\\\\320\\\\272\\\\320\\\\273\\\\320\\\\270\\\\320\\\\275\\\\320\\\\260\\\\320\\\\275\\\\320\\\\270\\\\320\\\\271\\\\n"
   "\\\"\\n"
   "  \\\"Z - \\\\320\\\\277\\\\321\\\\200\\\\320\\\\276\\\\321\\\\207\\\\320\\\\265\\\\321\\\\201\\\\321\\\\202\\\\321\\\\214\\\"\\n"
-  "font: \\\"/ruslan/Tomba2full.font\\\"\\n"
+  "font: \\\"/ruslan/Fonts/Press Start 2P/PressStart2P.font\\\"\\n"
   "material: \\\"/builtins/fonts/label-df.material\\\"\\n"
   "\"\n"
   "  position {\n"
@@ -227,7 +227,7 @@ embedded_instances {
   "blend_mode: BLEND_MODE_ALPHA\\n"
   "line_break: false\\n"
   "text: \\\"\\\"\\n"
-  "font: \\\"/ruslan/Tomba2full.font\\\"\\n"
+  "font: \\\"/ruslan/Fonts/Press Start 2P/PressStart2P.font\\\"\\n"
   "material: \\\"/builtins/fonts/label-df.material\\\"\\n"
   "\"\n"
   "  position {\n"
@@ -283,7 +283,7 @@ embedded_instances {
   "  \\\"\\\\320\\\\273\\\\320\\\\260\\\\320\\\\267\\\\320\\\\265\\\\321\\\\200\\\\320\\\\275\\\\320\\\\276\\\\320\\\\265 \\\\320\\\\270\\\\321\\\\201\\\\320\\\\277\\\\320\\\\265\\\\320\\\\277\\\\320\\\\265\\\\320\\\\273\\\\320\\\\265\\\\320\\\\275\\\\320\\\\270\\\\320\\\\265\\\\n"
   "\\\"\\n"
   "  \\\"\\\\320\\\\261\\\\320\\\\260\\\\321\\\\200\\\\321\\\\214\\\\320\\\\265\\\\321\\\\200\\\"\\n"
-  "font: \\\"/ruslan/Tomba2full.font\\\"\\n"
+  "font: \\\"/ruslan/Fonts/Press Start 2P/PressStart2P.font\\\"\\n"
   "material: \\\"/builtins/fonts/label-df.material\\\"\\n"
   "\"\n"
   "  position {\n"
@@ -376,8 +376,8 @@ embedded_instances {
   "  type: \"camera\"\n"
   "  data: \"aspect_ratio: 1.0\\n"
   "fov: 0.7854\\n"
-  "near_z: 1.0\\n"
-  "far_z: -1.0\\n"
+  "near_z: -10.0\\n"
+  "far_z: 10.0\\n"
   "auto_aspect_ratio: 0\\n"
   "orthographic_projection: 1\\n"
   "orthographic_zoom: 1.0\\n"
@@ -458,7 +458,7 @@ embedded_instances {
   position {
     x: 0.0
     y: 18.0
-    z: 0.0
+    z: -9.0
   }
   rotation {
     x: 0.0
