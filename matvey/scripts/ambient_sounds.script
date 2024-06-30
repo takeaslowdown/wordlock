@@ -1,0 +1,28 @@
+function init(self)
+	self.sound1 = '#ambient'
+	self.s1_playing = false
+	
+	self.sound2 = '#blop'
+	self.s2_playing = false
+
+	self.rng_lock = false
+end
+
+local function play_sound(self, num)
+	if num % 13 == 0 and not self.s1_playing then
+		self.s1_playing = true
+		sound.play(self.sound1, {}, function() self.s1_playing = false; end)
+	elseif num % 25 == 0 and not self.s2_playing then
+		self.s2_playing = true
+		sound.play(self.sound2, {}, function() self.s2_playing = false; end)
+	end
+end
+	
+
+function update(self, dt)
+	if not self.rng_lock and (not self.s1_playing or not self.s2_playing) then
+		self.rng_lock = true
+		play_sound(self, math.random(0, 100))
+		timer.delay(3, false, function() self.rng_lock = false; end)
+	end
+end
