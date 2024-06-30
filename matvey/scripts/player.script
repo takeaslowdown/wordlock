@@ -6,8 +6,7 @@ local jump_takeoff_speed = 400
 -- acceleration factor to use when air-borne
 local air_acceleration_factor = 0.8
 -- max speed right/left
-local max_speed = 450
-local max_hp = 3
+local max_speed = 220
 -- gravity pulling the player down in pixel units
 local gravity = -200
 
@@ -44,6 +43,8 @@ function init(self)
 	self.input = ''
 	go.property("inputhash", hash(''))
 	go.property("hp", 3)
+	self.max_hp = self.hp
+	self.stored_hp = self.hp
 	self.being_attacked = false
 	self.hplabel_id = "#hplabel"
 
@@ -116,7 +117,7 @@ end
 function update(self, dt)
 	local hplabel = ""
 	for i = 1, self.hp do
-		if i <= max_hp then
+		if i <= self.stored_hp then
 			hplabel = hplabel .. " <3 "
 		else
 			hplabel = hplabel .. " + "
@@ -136,6 +137,11 @@ end
 
 
 function fixed_update(self, dt)
+	if self.hp <= 0 then
+		play_animation(self, "idle")
+		return
+	end
+	
 	-- apply gravity
 	self.velocity.y = self.velocity.y + gravity * dt
 
@@ -275,8 +281,9 @@ local function cast(self, casted_word)
 		props[hash("/spell")] = {dmg = 0.0, dispose_in = 5.0, follow = true, follow_url = hash("/player/player"), follow_offset = vmath.vector3(0, 60, -1)}
 		collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.5)
 
+		self.stored_hp = self.hp
 		self.hp = self.hp + 2
-		timer.delay(5, false, function() if self.hp > max_hp then self.hp = max_hp; end; end)
+		timer.delay(5, false, function() if self.hp > self.stored_hp then self.hp = self.stored_hp; end; end)
 	else
 		if go.exists("/enemywizard/enemywizard#enemy_wizard") then
 			msg.post("/enemywizard/enemywizard#enemy_wizard", "counterspell")
@@ -314,6 +321,11 @@ local function play_keyboard_sound(self)
 end
 
 function on_input(self, action_id, action)
+	if action_id == hash("escape") then
+		msg.post("main:/guis#start", "show_start")
+		msg.post("main:/loader#loader", "unload_level")
+	end
+	
 	if self.hp <= 0 then
 		return
 	end
@@ -354,8 +366,5 @@ function on_input(self, action_id, action)
 			self.casts_shown = true
 			msg.post("#tiplabel_casts", "enable")
 		end
-	elseif action_id == hash("escape") then
-		msg.post("main:/guis#start", "show_start")
-		msg.post("main:/loader#loader", "unload_level")
 	end
 end
