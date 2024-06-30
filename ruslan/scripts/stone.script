@@ -1,0 +1,21 @@
+
+go.property("hp", 3)
+function init(self)
+	-- initial enemy velocity
+	self.player_id = "/player#player"
+	
+end
+
+function fixed_update(self, dt)
+	if self.hp <= 0 then
+		go.delete()
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	-- check if we received a contact point message
+	if message_id == hash("get_dmg") then
+		print('got dmg from ' .. sender)
+		self.hp = self.hp - go.get(sender, "dmg")
+	end
+end
