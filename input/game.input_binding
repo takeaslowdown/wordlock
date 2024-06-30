@@ -26,6 +26,10 @@ key_trigger {
   input: KEY_X
   action: "showtip"
 }
+key_trigger {
+  input: KEY_ESC
+  action: "escape"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_1
   action: "touch"

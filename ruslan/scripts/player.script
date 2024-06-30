@@ -172,7 +172,7 @@ local function jump(self)
 end
 
 
-function abort_jump(self)
+local function abort_jump(self)
 	if self.velocity.y > 0 then
 		self.velocity.y = self.velocity.y * 0.5
 	end
