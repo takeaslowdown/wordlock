@@ -7,6 +7,7 @@ local jump_takeoff_speed = 400
 local air_acceleration_factor = 0.8
 -- max speed right/left
 local max_speed = 250
+local max_hp = 3
 -- gravity pulling the player down in pixel units
 local gravity = -200
 
@@ -46,7 +47,14 @@ function init(self)
 	self.being_attacked = false
 	self.hplabel_id = "#hplabel"
 
-	self.spellfactory = "#spellfactory"
+	self.dummy_factory = "/player/spells_preload#dummy_spell"
+	self.field_factory = "/player/spells_preload#field_spell"
+	self.arrow_factory = "/player/spells_preload#fireball_spell"
+	self.haste_factory = "/player/spells_preload#haste_spell"
+	self.laser_factory = "/player/spells_preload#laser_spell"
+	self.barrier_factory = "/player/spells_preload#barrier_spell"
+	
+	self.spellfactory = self.dummy_factory
 	collectionfactory.load(self.spellfactory, function(_, url, result) end)
 
 	msg.post("#inputlabel", "disable")
@@ -95,7 +103,11 @@ end
 function update(self, dt)
 	local hplabel = ""
 	for i = 1, self.hp do
-		hplabel = hplabel .. " <3 "
+		if i <= max_hp then
+			hplabel = hplabel .. " <3 "
+		else
+			hplabel = hplabel .. " + "
+		end
 	end
 	label.set_text(self.hplabel_id, hplabel)
 end
@@ -167,6 +179,12 @@ local function walk(self, direction)
 	end
 end
 
+local function abort_jump(self)
+	if self.velocity.y > 0 then
+		self.velocity.y = self.velocity.y * 0.5
+	end
+end
+
 local function jump(self)
 	if self.ground_contact and not self.jumped then
 		self.jumped = true
@@ -177,11 +195,8 @@ local function jump(self)
 	end
 end
 
-
-function abort_jump(self)
-	if self.velocity.y > 0 then
-		self.velocity.y = self.velocity.y * 0.5
-	end
+local function set_spellfactory(self, spell_prefab)
+	self.spellfactory = spell_prefab
 end
 
 
@@ -190,16 +205,18 @@ local function cast(self, casted_word)
 	print(collectionfactory.get_status(self.spellfactory))
 	self.inputhash = hash(casted_word)
 	if casted_word == "поле" then
-		print("casted noJle")
+		set_spellfactory(self, self.field_factory)
+
 		local p = go.get_position(".")
 		p.y = p.y + 35
 		p.z = -1
 		local props = {}
-		props[hash("/spell")] = {projectile = 0, dmg = 10.0}
-		collectionfactory.create(self.spellfactory, p, vmath.quat(), {}, 1.0)
+		props[hash("/spell")] = {projectile = 0, dmg = 10.0, follow = true, follow_url = hash("/player/player"), follow_offset = vmath.vector3(0, 55, -1)}
+		collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.0)
 	--                                               vvv debug
 	elseif casted_word == "стрела" or casted_word == "b" then
-		print("casted CTPEJLA")
+		set_spellfactory(self, self.arrow_factory)
+
 		local p = go.get_position(".")
 		p.x = p.x + 25 * self.facing_direction
 		p.y = p.y + 45
@@ -208,21 +225,48 @@ local function cast(self, casted_word)
 		props[hash("/spell")] = {projectile = self.facing_direction, dmg = 3.0}
 		collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.0)
 	elseif casted_word == "рывок" then
+		set_spellfactory(self, self.haste_factory)
+
+		local p = go.get_position(".")
+		local props = {}
+		props[hash("/spell")] = {dmg = 0.0, dispose_in = 1.0, follow = true, follow_url = hash("/player/player"), follow_offset = vmath.vector3(0, 145, -1)}
+		collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.0)
+
 		self.jump_speed = jump_takeoff_speed * 1.25
 		self.xspeed = max_speed * 2
 		timer.delay(3, false, function() self.jump_speed = jump_takeoff_speed / 1.25; self.xspeed = max_speed / 2; end)
+	elseif casted_word == "лазерное испепеление" then
+		set_spellfactory(self, self.laser_factory)
+
+		local p = go.get_position(".")
+		p.x = p.x + 600 * self.facing_direction
+		p.y = p.y + 65
+		p.z = -1
+		local props = {}
+		props[hash("/spell")] = {projectile = self.facing_direction / 1000, dispose_in = 0.7, dmg = 15.0, follow = true, follow_url = hash("/player/player"), follow_offset = vmath.vector3(600 * self.facing_direction, 145, -1)}
+		collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.0)
+	elseif casted_word == "барьер" then
+		set_spellfactory(self, self.barrier_factory)
+
+		local p = go.get_position(".")
+		local props = {}
+		props[hash("/spell")] = {dmg = 0.0, dispose_in = 5.0, follow = true, follow_url = hash("/player/player"), follow_offset = vmath.vector3(0, 60, -1)}
+		collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.5)
+
+		self.hp = self.hp + 2
+		timer.delay(5, false, function() if self.hp > max_hp then self.hp = max_hp; end; end)
 	else
 		msg.post("/enemywizard/enemywizard#enemy_wizard", "counterspell")
 	end
 end
 
-local function add_letter(word, letter)
-	local _, check_for_rus = utf8.gsub(letter, "[А-Яа-я]", " ", 1)
-	if check_for_rus == 0 then
-		return word
-	end
-	return utf8.gsub(word, "_", letter, 1)
-end
+-- local function add_letter(word, letter)
+-- 	local _, check_for_rus = utf8.gsub(letter, "[А-Яа-я]", " ", 1)
+-- 	if check_for_rus == 0 then
+-- 		return word
+-- 	end
+-- 	return utf8.gsub(word, "_", letter, 1)
+-- end
 
 local function delete_letter(word)
 	return utf8.reverse(utf8.gsub(utf8.reverse(word), "[а-яА-Я]", "", 1))
