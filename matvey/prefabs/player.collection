@@ -3,6 +3,7 @@ scale_along_z: 0
 embedded_instances {
   id: "player"
   children: "camera"
+  children: "sounds"
   children: "spells_preload"
   data: "components {\n"
   "  id: \"player\"\n"
@@ -589,6 +590,26 @@ embedded_instances {
   "  }\n"
   "}\n"
   ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "sounds"
+  data: ""
   position {
     x: 0.0
     y: 0.0
