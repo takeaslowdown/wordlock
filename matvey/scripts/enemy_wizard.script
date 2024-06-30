@@ -10,7 +10,7 @@ end
 function init(self)
 	self.velocity = vmath.vector3()
 	go.property("hp", 100)
-	go.property("current_spell", '')
+	self.current_spell = ''
 	
 	self.being_attacked = false
 	self.stunned = false

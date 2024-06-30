@@ -1,4 +1,24 @@
 name: "default"
+collection_instances {
+  id: "cave_ambient_sounds"
+  collection: "/matvey/prefabs/env/cave_ambient_sounds.collection"
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
 scale_along_z: 0
 embedded_instances {
   id: "player"
@@ -342,8 +362,8 @@ embedded_instances {
   "material: \\\"/builtins/fonts/label-df.material\\\"\\n"
   "\"\n"
   "  position {\n"
-  "    x: -4.0\n"
-  "    y: -2.0\n"
+  "    x: 0.0\n"
+  "    y: -100.0\n"
   "    z: 0.0\n"
   "  }\n"
   "  rotation {\n"
@@ -570,11 +590,55 @@ embedded_instances {
   }
 }
 embedded_instances {
+  id: "sounds"
+  children: "keys"
+  data: "embedded_components {\n"
+  "  id: \"steps\"\n"
+  "  type: \"sound\"\n"
+  "  data: \"sound: \\\"/matvey/assets/sound/player/steps.wav\\\"\\n"
+  "looping: 1\\n"
+  "group: \\\"master\\\"\\n"
+  "gain: 2.0\\n"
+  "pan: 0.0\\n"
+  "speed: 1.0\\n"
+  "loopcount: 127\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
   id: "keys"
   data: "embedded_components {\n"
-  "  id: \"key1\"\n"
+  "  id: \"key_enter4\"\n"
   "  type: \"sound\"\n"
-  "  data: \"sound: \\\"/matvey/assets/sound/ui/keys/k1.wav\\\"\\n"
+  "  data: \"sound: \\\"/matvey/assets/sound/ui/keys/ks4.wav\\\"\\n"
   "looping: 0\\n"
   "group: \\\"master\\\"\\n"
   "gain: 1.0\\n"
@@ -595,9 +659,9 @@ embedded_instances {
   "  }\n"
   "}\n"
   "embedded_components {\n"
-  "  id: \"key2\"\n"
+  "  id: \"key_enter1\"\n"
   "  type: \"sound\"\n"
-  "  data: \"sound: \\\"/matvey/assets/sound/ui/keys/k2.wav\\\"\\n"
+  "  data: \"sound: \\\"/matvey/assets/sound/ui/keys/ks1.wav\\\"\\n"
   "looping: 0\\n"
   "group: \\\"master\\\"\\n"
   "gain: 1.0\\n"
@@ -618,9 +682,9 @@ embedded_instances {
   "  }\n"
   "}\n"
   "embedded_components {\n"
-  "  id: \"key3\"\n"
+  "  id: \"key_enter2\"\n"
   "  type: \"sound\"\n"
-  "  data: \"sound: \\\"/matvey/assets/sound/ui/keys/k3.wav\\\"\\n"
+  "  data: \"sound: \\\"/matvey/assets/sound/ui/keys/ks2.wav\\\"\\n"
   "looping: 0\\n"
   "group: \\\"master\\\"\\n"
   "gain: 1.0\\n"
@@ -641,32 +705,9 @@ embedded_instances {
   "  }\n"
   "}\n"
   "embedded_components {\n"
-  "  id: \"key4\"\n"
+  "  id: \"key_enter3\"\n"
   "  type: \"sound\"\n"
-  "  data: \"sound: \\\"/matvey/assets/sound/ui/keys/k4.wav\\\"\\n"
-  "looping: 0\\n"
-  "group: \\\"master\\\"\\n"
-  "gain: 1.0\\n"
-  "pan: 0.0\\n"
-  "speed: 1.0\\n"
-  "loopcount: 0\\n"
-  "\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "}\n"
-  "embedded_components {\n"
-  "  id: \"key5\"\n"
-  "  type: \"sound\"\n"
-  "  data: \"sound: \\\"/matvey/assets/sound/ui/keys/k5.wav\\\"\\n"
+  "  data: \"sound: \\\"/matvey/assets/sound/ui/keys/ks3.wav\\\"\\n"
   "looping: 0\\n"
   "group: \\\"master\\\"\\n"
   "gain: 1.0\\n"
