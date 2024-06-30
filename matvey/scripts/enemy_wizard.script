@@ -161,6 +161,8 @@ end
 
 function update(self, dt)
 	if self.hp <= 0 then
+		msg.post("main:/loader#loader", "unload_boss")
+		msg.post("main:/loader#loader", "load_end")
 		go.delete("#")
 	end
 	

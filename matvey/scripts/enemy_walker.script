@@ -34,6 +34,8 @@ function init(self)
 	go.property("stunned", false)
 	go.property("speed", 80)
 	self.max_speed = self.speed
+
+	self.atk_sound = "#sound"
 end
 
 
@@ -99,6 +101,7 @@ end
 
 
 function try_attack(self, pos, dir, dt)
+	sound.play(self.atk_sound)
 	self.performing_attack = true
 	self.animing_atk = true
 	local atk_frame_moment = 5

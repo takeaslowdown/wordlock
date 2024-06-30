@@ -1,4 +1,4 @@
-name: "playercontrol_test"
+name: "bossfight"
 collection_instances {
   id: "player"
   collection: "/matvey/prefabs/player.collection"
