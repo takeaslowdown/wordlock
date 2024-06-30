@@ -2,6 +2,39 @@ function init(self)
 	msg.post(".", "acquire_input_focus")
 	msg.post("#", "hide_level_select")                                  -- [1]
 	self.active = false
+
+	self.start = gui.get_node("start")
+	self.start_t = gui.get_node("start_text")
+
+	self.tutorial = gui.get_node("tutorial")
+	self.tutorial_t = gui.get_node("tutorial_text")
+
+	self.back = gui.get_node("back")
+	self.back_t = gui.get_node("back_text")
+
+	self.selected_node = nil
+	self.hover_color = vmath.vector4(1, 1, 1, 1)
+	self.unhover_color = vmath.vector4(94/255, 94/255, 94/255, 1.0)
+end
+
+function update(self, dt)
+	if self.selected_node == self.start_t then
+		gui.set_color(self.start_t, self.hover_color)
+		gui.set_color(self.tutorial_t, self.unhover_color)
+		gui.set_color(self.back_t, self.unhover_color)
+	elseif self.selected_node == self.tutorial_t then
+		gui.set_color(self.start_t, self.unhover_color)
+		gui.set_color(self.tutorial_t, self.hover_color)
+		gui.set_color(self.back_t, self.unhover_color)
+	elseif self.selected_node == self.back_t then
+		gui.set_color(self.start_t, self.unhover_color)
+		gui.set_color(self.tutorial_t, self.unhover_color)
+		gui.set_color(self.back_t, self.hover_color)
+	else
+		gui.set_color(self.start_t, self.unhover_color)
+		gui.set_color(self.tutorial_t, self.unhover_color)
+		gui.set_color(self.back_t, self.unhover_color)
+	end
 end
 
 function on_message(self, message_id, message, sender)
@@ -15,21 +48,31 @@ function on_message(self, message_id, message, sender)
 end
 
 function on_input(self, action_id, action)
+	if action.x and action.y then
+		if gui.pick_node(self.start, action.x, action.y) then
+			self.selected_node = self.start_t
+		elseif gui.pick_node(self.tutorial, action.x, action.y) then
+			self.selected_node = self.tutorial_t
+		elseif gui.pick_node(self.back, action.x, action.y) then
+			self.selected_node = self.back_t
+		else
+			self.selected_node = nil
+		end
+	end
 	if action_id == hash("touch") and action.pressed and self.active then
-		
-		local start = gui.get_node("start")                               -- [1]
+		local start = self.start                                                -- [1]
 		if gui.pick_node(start, action.x, action.y) then
 			msg.post("/loader#loader", "load_level")
 			msg.post("#", "hide_level_select")    
 		end
 
-		local tutorial = gui.get_node("tutorial")                               -- [1]
+		local tutorial = self.tutorial                                          -- [1]
 		if gui.pick_node(tutorial, action.x, action.y) then
 			msg.post("/loader#loader", "load_tutorial")
 			msg.post("#", "hide_level_select")    
 		end
 		
-		local back = gui.get_node("back")                               -- [1]
+		local back = self.back                                                  -- [1]
 		if gui.pick_node(back, action.x, action.y) then
 			msg.post("#level_select", "hide_level_select")
 			msg.post("#start", "show_start")
