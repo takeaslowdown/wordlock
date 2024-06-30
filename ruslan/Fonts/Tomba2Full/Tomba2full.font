@@ -1,4 +1,4 @@
-font: "/ruslan/tomba2full.ttf"
+font: "/ruslan/Fonts/Tomba2Full/tomba2full.ttf"
 material: "/builtins/fonts/font.material"
 size: 24
 antialias: 0
@@ -10,7 +10,7 @@ shadow_blur: 0
 shadow_x: 0.0
 shadow_y: 0.0
 output_format: TYPE_BITMAP
-all_chars: false
+all_chars: true
 cache_width: 0
 cache_height: 0
 render_mode: MODE_SINGLE_LAYER
