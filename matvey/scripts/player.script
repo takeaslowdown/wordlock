@@ -201,6 +201,12 @@ function on_message(self, message_id, message, sender)
 			self.stored_hp = self.hp
 			timer.delay(0.4, false, function() self.being_attacked = false; end)
 		end
+	elseif message_id == hash("trigger_response") and message.other_group == hash("level_end") then
+		print("выход")
+		msg.post("/tutorial#tutorial_gui", "level_completed", { pos = go.get_position() })
+		self.velocity.x = 0
+		self.hp = 0
+		
 	end
 end
 

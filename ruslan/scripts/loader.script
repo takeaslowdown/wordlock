@@ -20,6 +20,11 @@ function on_message(self, message_id, message, sender)
 		msg.post(proxy, "disable")
 		msg.post(proxy, "final")
 		msg.post(proxy, "unload")
+	elseif message_id == hash("unload_tutorial") then                      -- [3]
+		local proxy = "#proxy_tutorial"
+		msg.post(proxy, "disable")
+		msg.post(proxy, "final")
+		msg.post(proxy, "unload")
 	elseif message_id == hash("proxy_loaded") then
 		msg.post(sender, "init")
 		msg.post(sender, "enable")
