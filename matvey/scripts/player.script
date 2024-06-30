@@ -354,5 +354,8 @@ function on_input(self, action_id, action)
 			self.casts_shown = true
 			msg.post("#tiplabel_casts", "enable")
 		end
+	elseif action_id == hash("escape") then
+		msg.post("main:/guis#start", "show_start")
+		msg.post("main:/loader#loader", "unload_level")
 	end
 end
