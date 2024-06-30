@@ -25,7 +25,7 @@ collection_instances {
   position {
     x: 673.0
     y: 53.0
-    z: -1.0
+    z: 0.0
   }
   rotation {
     x: 0.0

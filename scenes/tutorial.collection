@@ -75,7 +75,7 @@ embedded_instances {
   ""
   position {
     x: 0.0
-    y: -71.0
+    y: -64.0
     z: 0.0
   }
   rotation {
@@ -136,12 +136,12 @@ embedded_instances {
   "  id: \"collisionobject\"\n"
   "  type: \"collisionobject\"\n"
   "  data: \"collision_shape: \\\"\\\"\\n"
-  "type: COLLISION_OBJECT_TYPE_DYNAMIC\\n"
-  "mass: 999.0\\n"
+  "type: COLLISION_OBJECT_TYPE_STATIC\\n"
+  "mass: 0.0\\n"
   "friction: 1.0\\n"
   "restitution: 1.0\\n"
-  "group: \\\"enemy\\\"\\n"
-  "mask: \\\"ground\\\"\\n"
+  "group: \\\"ground\\\"\\n"
+  "mask: \\\"default\\\"\\n"
   "mask: \\\"player\\\"\\n"
   "mask: \\\"spell\\\"\\n"
   "embedded_collision_shape {\\n"
@@ -166,8 +166,8 @@ embedded_instances {
   "  data: 142.52725\\n"
   "  data: 12.096415\\n"
   "}\\n"
-  "linear_damping: 1.0\\n"
-  "angular_damping: 1.0\\n"
+  "linear_damping: 9.0\\n"
+  "angular_damping: 9.0\\n"
   "locked_rotation: true\\n"
   "bullet: false\\n"
   "\"\n"
@@ -185,8 +185,8 @@ embedded_instances {
   "}\n"
   ""
   position {
-    x: 3735.0
-    y: 27.0
+    x: 5478.0
+    y: 38.0
     z: -1.0
   }
   rotation {
@@ -198,6 +198,91 @@ embedded_instances {
   scale3 {
     x: 0.5
     y: 0.7
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "bg"
+  data: "components {\n"
+  "  id: \"adaptive_bg\"\n"
+  "  component: \"/ruslan/scripts/adaptive_bg.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "  property_decls {\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"sprite\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"default_animation: \\\"cave\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "blend_mode: BLEND_MODE_ALPHA\\n"
+  "playback_rate: 5.0\\n"
+  "textures {\\n"
+  "  sampler: \\\"texture_sampler\\\"\\n"
+  "  texture: \\\"/matvey/assets/bg/cave/cave.atlas\\\"\\n"
+  "}\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 333.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"sprite1\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"default_animation: \\\"cave\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "blend_mode: BLEND_MODE_ALPHA\\n"
+  "playback_rate: 5.0\\n"
+  "textures {\\n"
+  "  sampler: \\\"texture_sampler\\\"\\n"
+  "  texture: \\\"/matvey/assets/bg/cave/cave.atlas\\\"\\n"
+  "}\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 1341.5\n"
+  "    y: 333.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 18.0
+    z: -9.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 2.0
+    y: 2.0
     z: 1.0
   }
 }
@@ -558,8 +643,8 @@ embedded_instances {
     w: 1.0
   }
   scale3 {
-    x: 1.0
-    y: 1.0
+    x: 1.509969
+    y: 1.218643
     z: 1.0
   }
 }
