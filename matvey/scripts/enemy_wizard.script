@@ -45,6 +45,9 @@ function init(self)
 		"/player/spells#spell_barrier",
 		"/enemywizard/spells#spell_counter"
 	}
+
+	self.music = "#music"
+	sound.play(self.music)
 end
 
 local function able_to_action(self)
@@ -152,8 +155,8 @@ local function apply_state(self)
 	elseif self.state == 4 then
 		cast_spell(self, "безвременье")
 		state_time = 5.0 * difficulty
-		cb = function() msg.post("/player/bg", "disable"); end
-		self.pre_action = timer.delay(state_time * 3, false, function() if able_to_action(self) then sound.play(self.spell_sounds[3]); msg.post("/player/bg", "enable"); end; end)
+		cb = function() msg.post("/bg", "disable"); end
+		self.pre_action = timer.delay(state_time * 3, false, function() if able_to_action(self) then sound.play(self.spell_sounds[3]); msg.post("/bg", "enable"); end; end)
 	end
 
 	self.action = timer.delay(state_time, false, function() if able_to_action(self) then cb(); reset_state(self); end; end)
@@ -161,6 +164,7 @@ end
 
 function update(self, dt)
 	if self.hp <= 0 then
+		sound.stop(self.music)
 		msg.post("main:/loader#loader", "unload_boss")
 		msg.post("main:/loader#loader", "load_end")
 		go.delete("#")

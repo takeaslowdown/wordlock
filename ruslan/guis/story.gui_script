@@ -9,6 +9,8 @@ function init(self)
 	self.selected_node = self.start
 	self.hover_color = vmath.vector4(1, 1, 1, 1)
 	self.unhover_color = vmath.vector4(94/255, 94/255, 94/255, 1.0)
+
+	self.music = "/loader#menu_music"
 end
 
 function update(self, dt)
@@ -43,6 +45,7 @@ function on_input(self, action_id, action)
 		local exit = self.exit
 		if gui.pick_node(start, action.x, action.y) then
 			msg.post("#", "hide_story")
+			sound.stop(self.music)
 			msg.post("/loader#loader", "load_level")
 		end
 	end
