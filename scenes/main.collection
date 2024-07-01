@@ -110,7 +110,7 @@ embedded_instances {
   "embedded_components {\n"
   "  id: \"proxy_level\"\n"
   "  type: \"collectionproxy\"\n"
-  "  data: \"collection: \\\"/scenes/bossfight.collection\\\"\\n"
+  "  data: \"collection: \\\"/scenes/level1.collection\\\"\\n"
   "exclude: false\\n"
   "\"\n"
   "  position {\n"
