@@ -10,13 +10,29 @@ function on_message(self, message_id, message, sender)
 	elseif message_id == hash("load_tutorial") then                        -- [2]
 		local proxy = "#proxy_tutorial"
 		msg.post(proxy, "load")
+	elseif message_id == hash("load_boss") then
+		local proxy = "#proxy_boss"
+		msg.post(proxy, "load")
 	elseif message_id == hash("unload_level") then                      -- [3]
 		local proxy = "#proxy_level"
 		msg.post(proxy, "disable")
 		msg.post(proxy, "final")
 		msg.post(proxy, "unload")
+	elseif message_id == hash("load_end") then
+		local proxy = "#proxy_end"
+		msg.post(proxy, "load")
+	elseif message_id == hash("unload_end") then                      -- [3]
+		local proxy = "#proxy_end"
+		msg.post(proxy, "disable")
+		msg.post(proxy, "final")
+		msg.post(proxy, "unload")
 	elseif message_id == hash("unload_tutorial") then                      -- [3]
 		local proxy = "#proxy_tutorial"
+		msg.post(proxy, "disable")
+		msg.post(proxy, "final")
+		msg.post(proxy, "unload")
+	elseif message_id == hash("unload_boss") then                      -- [3]
+		local proxy = "#proxy_boss"
 		msg.post(proxy, "disable")
 		msg.post(proxy, "final")
 		msg.post(proxy, "unload")

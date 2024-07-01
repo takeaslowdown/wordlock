@@ -1,17 +1,18 @@
 function init(self)
 	self.player_url = "/player/player"
+	go.property("parallax_speed", 25)
 end
 
-function update(self, dt)
-	local pl_pos = go.get_position(self.player_url)
-	update_parallax_layer(self, pl_pos, 25)
-end
-
-function update_parallax_layer(self, pl_pos, divider)
+local function update_parallax_layer(self, pl_pos, divider)
 	local pos = go.get_position(".")
 
 	pos.x = pl_pos.x - pl_pos.x / divider
 	go.set_position(pos, ".")
+end
+
+function update(self, dt)
+	local pl_pos = go.get_position(self.player_url)
+	update_parallax_layer(self, pl_pos, self.parallax_speed)
 end
 
 function on_message(self, message_id, message, sender)

@@ -36,6 +36,18 @@ function init(self)
 	self.spellfactory = self.dummy_factory
 	
 	go.property("barrier", false)
+
+	self.spell_sounds = {
+		"/player/spells#spell_barrier",
+		"/player/spells#spell_fire",
+		"/player/spells#spell_haste",
+		"/player/spells#spell_laser",
+		"/player/spells#spell_barrier",
+		"/enemywizard/spells#spell_counter"
+	}
+
+	self.music = "#music"
+	sound.play(self.music)
 end
 
 local function able_to_action(self)
@@ -112,6 +124,7 @@ local function apply_state(self)
 	local state_time = 1.0 -- in seconds
 	local difficulty = 0.7
 	local cb = function() end
+	
 	if self.state == 0 then
 		return
 	elseif self.state == 1 then
@@ -132,18 +145,18 @@ local function apply_state(self)
 		p.z = -1
 		local props = {}
 		props[hash("/spell")] = {projectile = sign(dir.x), dmg = 1.0, by_player = false}
-		cb = function() if able_to_action(self) then collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.0)  end; end
+		cb = function() if able_to_action(self) then sound.play(self.spell_sounds[2]); collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.0)  end; end
 	elseif self.state == 3 then
 		set_spellfactory(self, self.haste_factory)
 		cast_spell(self, "барьер")
 		play_animation(self, "cast")
 		state_time = 7.5 * difficulty
-		self.pre_action = timer.delay(state_time / 2, false, function() if able_to_action(self) then play_animation(self, "barrier"); self.barrier = true; self.current_spell = ""; end; end)
+		self.pre_action = timer.delay(state_time / 2, false, function() if able_to_action(self) then sound.play(self.spell_sounds[1]); play_animation(self, "barrier"); self.barrier = true; self.current_spell = ""; end; end)
 	elseif self.state == 4 then
 		cast_spell(self, "безвременье")
 		state_time = 5.0 * difficulty
-		cb = function() msg.post("/player/bg", "disable"); end
-		self.pre_action = timer.delay(state_time * 3, false, function() msg.post("/player/bg", "enable"); end)
+		cb = function() msg.post("/bg", "disable"); end
+		self.pre_action = timer.delay(state_time * 3, false, function() if able_to_action(self) then sound.play(self.spell_sounds[3]); msg.post("/bg", "enable"); end; end)
 	end
 
 	self.action = timer.delay(state_time, false, function() if able_to_action(self) then cb(); reset_state(self); end; end)
@@ -151,6 +164,9 @@ end
 
 function update(self, dt)
 	if self.hp <= 0 then
+		sound.stop(self.music)
+		msg.post("main:/loader#loader", "unload_boss")
+		msg.post("main:/loader#loader", "load_end")
 		go.delete("#")
 	end
 	
@@ -190,6 +206,7 @@ function on_message(self, message_id, message, sender)
 		if not self.stunned and go.get(sender, "inputhash") == hash("контр" .. self.current_spell) then
 			stun_for(self, 2.0)
 			self.counterspelled = true
+			sound.play(self.spell_sounds[6]);
 			timer.delay(2.5, false, function() reset_counterspelled(self); end)
 		end
 	end

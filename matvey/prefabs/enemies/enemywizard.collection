@@ -2,6 +2,7 @@ name: "enemywizard"
 scale_along_z: 0
 embedded_instances {
   id: "enemywizard"
+  children: "spells"
   children: "spells_preloaded"
   data: "components {\n"
   "  id: \"enemy_wizard\"\n"
@@ -270,6 +271,29 @@ embedded_instances {
   "    z: 1.0\n"
   "  }\n"
   "}\n"
+  "embedded_components {\n"
+  "  id: \"music\"\n"
+  "  type: \"sound\"\n"
+  "  data: \"sound: \\\"/matvey/assets/sound/music/music2.wav\\\"\\n"
+  "looping: 1\\n"
+  "group: \\\"master\\\"\\n"
+  "gain: 1.0\\n"
+  "pan: 0.0\\n"
+  "speed: 1.0\\n"
+  "loopcount: 127\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
   ""
   position {
     x: 0.0
@@ -372,6 +396,49 @@ embedded_instances {
   "  data: \"prototype: \\\"/matvey/prefabs/spells/laser_spell.collection\\\"\\n"
   "load_dynamically: true\\n"
   "dynamic_prototype: true\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "spells"
+  data: "embedded_components {\n"
+  "  id: \"spell_counter\"\n"
+  "  type: \"sound\"\n"
+  "  data: \"sound: \\\"/matvey/assets/sound/spells/counter.mp3_.wav\\\"\\n"
+  "looping: 0\\n"
+  "group: \\\"master\\\"\\n"
+  "gain: 1.0\\n"
+  "pan: 0.0\\n"
+  "speed: 1.0\\n"
+  "loopcount: 0\\n"
   "\"\n"
   "  position {\n"
   "    x: 0.0\n"

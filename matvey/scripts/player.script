@@ -6,8 +6,7 @@ local jump_takeoff_speed = 400
 -- acceleration factor to use when air-borne
 local air_acceleration_factor = 0.8
 -- max speed right/left
-local max_speed = 450
-local max_hp = 3
+local max_speed = 300
 -- gravity pulling the player down in pixel units
 local gravity = -200
 
@@ -44,6 +43,8 @@ function init(self)
 	self.input = ''
 	go.property("inputhash", hash(''))
 	go.property("hp", 3)
+	self.max_hp = self.hp
+	self.stored_hp = self.hp
 	self.being_attacked = false
 	self.hplabel_id = "#hplabel"
 
@@ -73,7 +74,14 @@ function init(self)
 
 	self.steps_sound = "/player/sounds#steps"
 	self.steps_sound_playing = false
-	
+
+	self.spells_sounds = {
+		"/player/spells#spell_barrier",
+		"/player/spells#spell_fire",
+		"/player/spells#spell_haste",
+		"/player/spells#spell_laser",
+		"/player/spells#spell_barrier"
+	}
 end
 
 local function play_animation(self, anim)
@@ -116,7 +124,7 @@ end
 function update(self, dt)
 	local hplabel = ""
 	for i = 1, self.hp do
-		if i <= max_hp then
+		if i <= self.max_hp then
 			hplabel = hplabel .. " <3 "
 		else
 			hplabel = hplabel .. " + "
@@ -136,6 +144,11 @@ end
 
 
 function fixed_update(self, dt)
+	if self.hp <= 0 then
+		play_animation(self, "idle")
+		return
+	end
+	
 	-- apply gravity
 	self.velocity.y = self.velocity.y + gravity * dt
 
@@ -185,14 +198,13 @@ function on_message(self, message_id, message, sender)
 		if not self.being_attacked then
 			self.being_attacked = true
 			self.hp = self.hp - 1
+			self.stored_hp = self.hp
 			timer.delay(0.4, false, function() self.being_attacked = false; end)
 		end
 	elseif message_id == hash("trigger_response") and message.other_group == hash("level_end") then
-		print("выход")
-		msg.post("/tutorial#tutorial_gui", "level_completed", { pos = go.get_position() })
+		msg.post("/level#endgui", "level_completed", { pos = go.get_position() })
 		self.velocity.x = 0
 		self.hp = 0
-		
 	end
 end
 
@@ -241,8 +253,9 @@ local function cast(self, casted_word)
 		local props = {}
 		props[hash("/spell")] = {projectile = 0, dmg = 10.0, follow = true, follow_url = hash("/player/player"), follow_offset = vmath.vector3(0, 55, -1)}
 		collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.0)
+		sound.play(self.spells_sounds[1])
 	--                                               vvv debug
-	elseif casted_word == "стрела" or casted_word == "b" then
+	elseif casted_word == "стрела" then
 		set_spellfactory(self, self.arrow_factory)
 
 		local p = go.get_position(".")
@@ -252,6 +265,7 @@ local function cast(self, casted_word)
 		local props = {}
 		props[hash("/spell")] = {projectile = self.facing_direction, dmg = 3.0}
 		collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.0)
+		sound.play(self.spells_sounds[2])
 	elseif casted_word == "рывок" then
 		set_spellfactory(self, self.haste_factory)
 
@@ -263,6 +277,7 @@ local function cast(self, casted_word)
 		self.jump_speed = jump_takeoff_speed * 1.25
 		self.xspeed = max_speed * 2
 		timer.delay(3, false, function() self.jump_speed = jump_takeoff_speed / 1.25; self.xspeed = max_speed / 2; end)
+		sound.play(self.spells_sounds[3])
 	elseif casted_word == "лазерное испепеление" then
 		set_spellfactory(self, self.laser_factory)
 
@@ -271,9 +286,17 @@ local function cast(self, casted_word)
 		p.y = p.y + 65
 		p.z = -1
 		local props = {}
-		props[hash("/spell")] = {projectile = self.facing_direction / 1000, dispose_in = 0.7, dmg = 15.0, follow = true, follow_url = hash("/player/player"), follow_offset = vmath.vector3(600 * self.facing_direction, 145, -1)}
+		props[hash("/spell")] = {push = 0.0, projectile = self.facing_direction / 1000, dispose_in = 0.7, dmg = 15.0, follow = true, follow_url = hash("/player/player"), follow_offset = vmath.vector3(600 * self.facing_direction, 145, -1)}
 		collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.0)
+		sound.play(self.spells_sounds[4])
 	elseif casted_word == "барьер" then
+		if self.stored_hp > self.max_hp then
+			self.stored_hp = self.max_hp
+		end
+		if self.hp > self.stored_hp then
+			self.hp = self.stored_hp
+		end
+		
 		set_spellfactory(self, self.barrier_factory)
 
 		local p = go.get_position(".")
@@ -281,8 +304,10 @@ local function cast(self, casted_word)
 		props[hash("/spell")] = {dmg = 0.0, dispose_in = 5.0, follow = true, follow_url = hash("/player/player"), follow_offset = vmath.vector3(0, 60, -1)}
 		collectionfactory.create(self.spellfactory, p, vmath.quat(), props, 1.5)
 
+		self.stored_hp = self.hp
 		self.hp = self.hp + 2
-		timer.delay(5, false, function() if self.hp > max_hp then self.hp = max_hp; end; end)
+		timer.delay(5, false, function() if self.hp > self.stored_hp then self.hp = self.stored_hp; end; end)
+		sound.play(self.spells_sounds[5])
 	else
 		if go.exists("/enemywizard/enemywizard#enemy_wizard") then
 			msg.post("/enemywizard/enemywizard#enemy_wizard", "counterspell")
@@ -320,6 +345,13 @@ local function play_keyboard_sound(self)
 end
 
 function on_input(self, action_id, action)
+	if action_id == hash("escape") then
+		msg.post("main:/guis#start", "show_start")
+		msg.post("main:/loader#loader", "unload_level")
+		msg.post("main:/loader#loader", "unload_tutorial")
+		msg.post("main:/loader#loader", "unload_boss")
+	end
+	
 	if self.hp <= 0 then
 		return
 	end
@@ -360,8 +392,5 @@ function on_input(self, action_id, action)
 			self.casts_shown = true
 			msg.post("#tiplabel_casts", "enable")
 		end
-	elseif action_id == hash("escape") then
-		msg.post("main:/guis#start", "show_start")
-		msg.post("main:/loader#loader", "unload_level")
 	end
 end

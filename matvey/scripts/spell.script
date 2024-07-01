@@ -74,6 +74,7 @@ function on_message(self, message_id, message, sender)
 			end
 
 			play_animation(self, "dispose")
+			timer.delay(0.1, false, function() self.deals_damage = false; end)
 			timer.delay(0.5, false, function() print("delete spell"); go.delete("."); end)
 		end
 	end
