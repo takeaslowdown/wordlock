@@ -68,6 +68,7 @@ function on_input(self, action_id, action)
 
 		local tutorial = self.tutorial                                          -- [1]
 		if gui.pick_node(tutorial, action.x, action.y) then
+			sound.stop("main:/loader#menu_music")
 			msg.post("/loader#loader", "load_tutorial")
 			msg.post("#", "hide_level_select")    
 		end

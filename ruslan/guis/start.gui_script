@@ -15,6 +15,7 @@ function init(self)
 	self.unhover_color = vmath.vector4(94/255, 94/255, 94/255, 1.0)
 
 	self.music = "/loader#menu_music"
+	sound.play(self.music)
 end
 
 function update(self, dt)
@@ -41,7 +42,6 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("show_start") then                            -- [2]
 		msg.post("#", "enable")
 		self.active = true
-		sound.play(self.music)
 	elseif message_id == hash("hide_start") then
 		msg.post("#", "disable")
 		self.active = false
